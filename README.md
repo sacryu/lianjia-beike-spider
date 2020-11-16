@@ -96,6 +96,7 @@ Total cost 29.757128953933716 second
 
 
 ### 更新记录
+- 2020/11/16 增加武汉地区地理编码gaode/zuobiao
 - 2019/06/21 去除requirements.txt中的webbrower
 - 2018/11/05 增加工具下载二手房缩略图tool/download_ershou_image.py
 - 2018/11/01 增加二手房缩略图地址

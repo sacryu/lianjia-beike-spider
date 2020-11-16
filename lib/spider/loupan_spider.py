@@ -14,6 +14,7 @@ from lib.request.headers import *
 from lib.utility.date import *
 from lib.utility.path import *
 from lib.zone.city import get_city
+from lib.gaode.zuobiao import get_zuobiao
 from lib.utility.log import *
 import lib.utility.version
 
@@ -32,6 +33,8 @@ class LouPanBaseSpider(BaseSpider):
             loupans = self.get_loupan_info(city_name)
             self.total_num = len(loupans)
             if fmt == "csv":
+                f.write(
+                    'date' + ',' + 'loupan' + ',' + 'average price(/m^2)' + ',' + 'total price(10k)' + ',' + 'pois_name' + ',' + 'type' + ',' + 'adname' + ',' + 'location' + '\n')
                 for loupan in loupans:
                     f.write(self.date_string + "," + loupan.text() + "\n")
         print("Finish crawl: " + city_name + ", save data to : " + csv_file)
@@ -45,7 +48,7 @@ class LouPanBaseSpider(BaseSpider):
         """
         total_page = 1
         loupan_list = list()
-        page = 'http://{0}.fang.{1}.com/loupan/'.format(city_name, SPIDER_NAME)
+        page = 'http://{0}.fang.{1}.com/loupan'.format(city_name, SPIDER_NAME)
         print(page)
         headers = create_headers()
         response = requests.get(page, timeout=10, headers=headers)
@@ -88,16 +91,46 @@ class LouPanBaseSpider(BaseSpider):
                 loupan = loupan.text.replace("\n", "")
 
                 try:
-                    total = total.text.strip().replace(u'总价', '')
+                    total = total.text.strip().replace(u'总价', '').replace(u'万/套', '')
                     total = total.replace(u'/套起', '')
                 except Exception as e:
                     total = '0'
 
-                print("{0} {1} {2} ".format(
-                    loupan, price, total))
+                zuobiao = get_zuobiao(loupan)
+
+                try:
+                    pois_name = zuobiao[0]
+                    if pois_name == []:
+                        pois_name = '0'
+                except Exception as e:
+                    pois_name = '0'
+
+                try:
+                    type = zuobiao[1]
+                    if type == []:
+                        type = '0'
+                except Exception as e:
+                    type = '0'
+
+                try:
+                    adname = zuobiao[2]
+                    if adname == []:
+                        adname = '0'
+                except Exception as e:
+                    adname = '0'
+
+                try:
+                    location = zuobiao[3]
+                    if location == []:
+                        location = '"0,0"'
+                except Exception as e:
+                    location = '"0,0"'
+
+                print("{0} {1} {2} {3} {4} {5} {6}".format(
+                    loupan, price, total, pois_name, type, adname, location))
 
                 # 作为对象保存
-                loupan = LouPan(loupan, price, total)
+                loupan = LouPan(loupan, price, total, pois_name, type, adname, location)
                 loupan_list.append(loupan)
         return loupan_list
 
