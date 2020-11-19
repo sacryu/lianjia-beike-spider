@@ -96,6 +96,7 @@ Total cost 29.757128953933716 second
 
 
 ### 更新记录
+- 2020/11/19 更新高德地图应用 <a href="https://maplab.amap.com/share/mapv/b808955f25ba8536395242e2e4a08722">高德</a>
 - 2020/11/16 增加武汉地区地理编码gaode/zuobiao
 - 2019/06/21 去除requirements.txt中的webbrower
 - 2018/11/05 增加工具下载二手房缩略图tool/download_ershou_image.py
